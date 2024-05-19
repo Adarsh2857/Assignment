@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Payroll Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #5cb8e6;
+        }
+        form {
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .form-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .form-row label {
+            margin-right: 10px;
+            width: 100px;
+            text-align: right;
+        }
+        .form-row select,
+        .form-row input {
+            margin-right: 10px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            flex: 1;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            display: block; /* Change the display property */
+            margin: 0 auto; /* Add margin to center horizontally */
+        }
+        
+        button:hover {
+            background-color: #4cae4c;
+        }
+        .result {
+            background-color: #e7f5e7;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .last-calculation {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Payroll Dashboard</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-row">
+                <label for="emp_no">Emp No:</label>
+                <select id="emp_no" name="emp_no" required>
+                    <option value="">Select Emp No</option>
+                    {% for emp_no in emp_numbers %}
+                        <option value="{{ emp_no }}" {% if emp_no == last_emp_no %}selected{% endif %}>{{ emp_no }}</option>
+                    {% endfor %}
+                </select>
+                <label for="month" style="margin-left: 20px;">Month:</label>
+                <select id="month" name="month" required>
+                    <option value="">Select Month</option>
+                    {% for month in months %}
+                        <option value="{{ month }}" {% if month == last_month %}selected{% endif %}>{{ month }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit">Calculate</button>
+        </form>
+
+        {% if gross_pay is not None and net_pay is not None %}
+            <div class="result">
+                <h2>Results</h2>
+                <div class="pay-details">
+                    <label for="gross_pay">Gross Pay:</label>
+                    <input type="text" id="gross_pay" name="gross_pay" value="{{ gross_pay|floatformat:4 }}" readonly>
+                </div>
+                <div class="pay-details">
+                    <label for="net_pay">Net Pay:</label>
+                    <input type="text" id="net_pay" name="net_pay" value="{{ net_pay|floatformat:4 }}" readonly>
+                </div>
+            </div>
+        {% endif %}
+
+        {% if last_gross_pay is not None and last_net_pay is not None %}
+            <div class="last-calculation">
+                <h3>Last Calculation</h3>
+                <p>Emp No: {{ last_emp_no }}, Month: {{ last_month }}</p>
+                <p>Gross Pay: {{ last_gross_pay }}, Net Pay: {{ last_net_pay }}</p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
